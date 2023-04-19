@@ -1,0 +1,46 @@
+﻿<Window x:Class="CSharpPractice4.Views.NewUserWindow"
+        x:Name="WindowElement"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CSharpPractice4.Views"
+        mc:Ignorable="d"
+        Title="NewUserWindow" Height="Auto" Width="300">
+    <StackPanel>
+        <TextBlock TextAlignment="Center" FontWeight="Bold" Padding="10">Enter user personal info</TextBlock>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="First name:"/>
+            <TextBox Grid.Column="1" Text="{Binding FirstName, Mode=TwoWay}"/>
+        </Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Last name:"/>
+            <TextBox Grid.Column="1" Text="{Binding LastName, Mode=TwoWay}"/>
+        </Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="E-mail:"/>
+            <TextBox Grid.Column="1" Text="{Binding Email, Mode=TwoWay}"/>
+        </Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="2*"/>
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="Birth date:"/>
+            <DatePicker Grid.Column="1" SelectedDate="{Binding BirthDate, Mode=TwoWay}"/>
+        </Grid>
+        <Button Command="{Binding ProceedCommand}" CommandParameter="{Binding ElementName=WindowElement}">Proceed</Button>
+    </StackPanel>
+</Window>

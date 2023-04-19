@@ -1,9 +1,11 @@
 ﻿using CSharpPractice3.Exceptions;
 using CSharpPractice3.Helpers;
 using CSharpPractice3.Validators;
+using CSharpPractice4.Models;
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text.Json.Serialization;
 
 namespace CSharpPractice3.Models
 {
@@ -47,6 +49,9 @@ namespace CSharpPractice3.Models
         { }
 
         public User(string firstName, string lastName, DateTime birthDate) : this(firstName, lastName, null, birthDate)
+        { }
+
+        public User(JsonUser user) : this(user.FirstName, user.LastName, user.Email, user.BirthDate)
         { }
 
         private void RecalculateBirthDateDependants()

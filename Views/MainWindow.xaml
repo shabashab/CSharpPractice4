@@ -7,6 +7,15 @@
         mc:Ignorable="d"
         Title="C# Practice 4" Height="450" Width="800">
     <Grid>
-        <DataGrid AutoGenerateColumns="True" ItemsSource="{Binding Users}"></DataGrid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0">
+            <Button Command="{Binding AddUserCommand}">Add</Button>
+            <Button Command="{Binding RemoveUserCommand}">Delete</Button>
+            <Button Command="{Binding SaveUsersCommand}">Save</Button>
+        </StackPanel>
+        <DataGrid Grid.Column="1" AutoGenerateColumns="True" SelectedIndex="{Binding SelectedUser}" ItemsSource="{Binding Users}"></DataGrid>
     </Grid>
 </Window>

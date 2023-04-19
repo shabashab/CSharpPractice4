@@ -1,8 +1,10 @@
 ﻿using CSharpPractice3.Models;
 using CSharpPractice4.Exceptions;
+using CSharpPractice4.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -17,10 +19,10 @@ namespace CSharpPractice4.Storage
             _storagePath = storagePath;
         }
 
-        public async Task<IEnumerable<User>> Load()
+        public async IAsyncEnumerable<User> Load()
         {
             if (!File.Exists(_storagePath))
-                return Array.Empty<User>();
+                yield break;
 
             var storageFileText = File.OpenRead(_storagePath);
 
@@ -29,18 +31,27 @@ namespace CSharpPractice4.Storage
                 throw new FilesystemStorageException("Cannot open file " + _storagePath);
             }
 
-            var user = await JsonSerializer.DeserializeAsync<IEnumerable<User>>(storageFileText);
+            var users = JsonSerializer.DeserializeAsyncEnumerable<JsonUser>(storageFileText);
 
-            if(user == null)
+            if(users == null)
             {
                 throw new FilesystemStorageException("Cannot deserialize file contents");
             }
 
-            return user;
+            await foreach(var jsonUser in users)
+            {
+                if (jsonUser == null)
+                    continue;
+
+                yield return new User(jsonUser);
+            }
         }
 
         public async Task Save(IEnumerable<User> value)
         {
+            if (File.Exists(_storagePath))
+                File.Delete(_storagePath);
+
             var storageFileText = File.OpenWrite(_storagePath);
 
             if(storageFileText == null)
@@ -48,8 +59,7 @@ namespace CSharpPractice4.Storage
                 throw new FilesystemStorageException("Cannot open file " + _storagePath);
             }
 
-
-            await JsonSerializer.SerializeAsync(storageFileText, value);
+            await JsonSerializer.SerializeAsync(storageFileText, value.Select(user => new JsonUser(user)));
         }
     }
 }

@@ -1,10 +1,14 @@
-﻿using CSharpPractice3.Models;
+﻿using CSharpPractice3.Helpers;
+using CSharpPractice3.Models;
+using CSharpPractice4.EventManagers;
 using CSharpPractice4.Generators;
 using CSharpPractice4.Storage;
+using CSharpPractice4.Views;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace CSharpPractice4.ViewModels
 {
@@ -22,11 +26,18 @@ namespace CSharpPractice4.ViewModels
 
         #endregion
 
+        #region Private Services
+
         private readonly IUsersStorage usersStorage;
         private readonly IGenerator<User> usersGenerator;
 
-        private bool _usersLoading;
+        #endregion
 
+        #region Properties
+
+        public ObservableCollection<User> Users { get; private set; }
+
+        private bool _usersLoading;
         public bool UsersLoading 
         {
             get => _usersLoading;
@@ -37,15 +48,50 @@ namespace CSharpPractice4.ViewModels
             }
         }
 
-        public ObservableCollection<User> Users { get; private set; }
+        private int _selectedUser;
+        public int SelectedUser
+        {
+            get => _selectedUser;
+            set
+            {
+                _selectedUser = value;
+                OnPropertyChanged("SelectedUser");
+            }
+        }
+
+        #endregion
+
+        #region Commands
+
+        public ICommand AddUserCommand { get; private set; }
+        public ICommand RemoveUserCommand { get; private set; }
+        public ICommand SaveUsersCommand { get; private set; }
+
+        private void AddUser(object param)
+        {
+            NewUserWindow newUserWindow = new NewUserWindow();
+            newUserWindow.ShowDialog();
+        }
+
+        private void RemoveUser(object param)
+        {
+            Users.RemoveAt(SelectedUser);
+        }
+
+        private void SaveUsers(object param)
+        {
+            usersStorage.Save(Users);
+        }
+
+        #endregion
 
         private async Task LoadUsersData()
         {
             UsersLoading = true;
 
-            var loadedUsers = await usersStorage.Load();
+            var loadedUsers = usersStorage.Load();
 
-            foreach (var loadedUser in loadedUsers)
+            await foreach (var loadedUser in loadedUsers)
             {
                 Users.Add(loadedUser);
             }
@@ -65,6 +111,11 @@ namespace CSharpPractice4.ViewModels
             UsersLoading = false;
         }
 
+        private void OnNewUser(object? sender, User user)
+        {
+            Users.Add(user);
+        }
+
         public MainViewModel()
         {
             usersStorage = new UsersFilesystemStorage("users.json");
@@ -75,6 +126,12 @@ namespace CSharpPractice4.ViewModels
 
             //Run in parallel
             LoadUsersData();
+
+            AddUserCommand = new RelayCommand(AddUser);
+            RemoveUserCommand = new RelayCommand(RemoveUser);
+            SaveUsersCommand = new RelayCommand(SaveUsers);
+
+            NewUserEventManager.Instance.OnEvent += OnNewUser;
         }
     }
 }

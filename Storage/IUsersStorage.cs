@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CSharpPractice4.Storage
 {
-    interface IUsersStorage : IStorage<IEnumerable<User>>
+    interface IUsersStorage : IStorage<User>
     {
     }
 }
